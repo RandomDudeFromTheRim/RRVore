@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Carrying a meal. Situational, so it lasts exactly as long as they are holding someone. -->
+  <ThoughtDef>
+    <defName>RR_CarryingPrey</defName>
+    <workerClass>RRVore.ThoughtWorker_CarryingPrey</workerClass>
+    <thoughtClass>Thought_Situational</thoughtClass>
+    <stages>
+      <li>
+        <label>carrying a meal</label>
+        <description>Someone is in there, and they can feel every bit of them.</description>
+        <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <!-- Being inside somebody. The prey keeps ticking, so they keep thinking about it. -->
+  <ThoughtDef>
+    <defName>RR_BeingSwallowed</defName>
+    <workerClass>RRVore.ThoughtWorker_BeingSwallowed</workerClass>
+    <thoughtClass>Thought_Situational</thoughtClass>
+    <stages>
+      <li>
+        <label>swallowed</label>
+        <description>It is warm, it is tight, and it is dissolving me.</description>
+        <baseMoodEffect>-10</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+</Defs>

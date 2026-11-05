@@ -44,6 +44,7 @@ namespace RRVore
             }
 
             list.Label($"Carrying {hold.Count}, {hold.RemainingKg:0} kg left to digest");
+            list.Label($"Room for about {RimRound.Utilities.BurstPoint.KilosRemaining(SelPawn):0} kg more before {SelPawn.LabelShort} bursts");
             list.GapLine();
 
             foreach (VorePrey v in hold.prey.ToList())
