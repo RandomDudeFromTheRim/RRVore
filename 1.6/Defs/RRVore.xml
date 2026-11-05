@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Someone is carrying swallowed pawns. Their mass is fed into the predator's stomach,
+       so RimRound's own digestion turns it into weight. -->
+  <HediffDef>
+    <defName>RR_VoreLoaded</defName>
+    <label>swallowed prey</label>
+    <labelNoun>a swallowed meal</labelNoun>
+    <description>This pawn has swallowed someone whole and is carrying them inside. Their mass is fed into this pawn's stomach until it is digested.</description>
+    <hediffClass>RRVore.Hediff_RRVoreHold</hediffClass>
+    <isBad>false</isBad>
+    <everCurableByItem>false</everCurableByItem>
+    <stages>
+      <li></li>
+    </stages>
+  </HediffDef>
+
+  <JobDef>
+    <defName>RR_SwallowTarget</defName>
+    <driverClass>RRVore.JobDriver_RRSwallow</driverClass>
+    <reportString>swallowing TargetA.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+  </JobDef>
+
+</Defs>

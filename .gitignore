@@ -1,0 +1,19 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+*.pdb
+*.user
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.suo
+
+# Local-only compresseds: never shipped, generated per machine.
+# RimWorld loads .dds in preference to .png, so these change what the game draws
+# and must not be committed.
+*.dds
+
+# OS noise
+Thumbs.db
+.DS_Store

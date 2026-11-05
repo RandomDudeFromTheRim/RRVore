@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationSequence">
+		<operations>
+			<!-- What a pawn has swallowed is shown on the pawn's own tab: the prey are held
+			     inside them and cannot be clicked on the map. -->
+			<li Class="PatchOperationAdd">
+				<order>Append</order>
+				<xpath>Defs/ThingDef[@Name="BasePawn"]/inspectorTabs</xpath>
+				<value>
+					<li>RRVore.ITab_RRVore</li>
+				</value>
+			</li>
+			<!-- Opportunistic swallowing for friendly pawns; the comp does nothing on anyone else. -->
+			<li Class="PatchOperationAdd">
+				<xpath>Defs/ThingDef[@Name="BasePawn"]/comps</xpath>
+				<value>
+					<li Class="RRVore.CompProperties_RRVoreHunt" />
+				</value>
+			</li>
+		</operations>
+	</Operation>
+</Patch>
