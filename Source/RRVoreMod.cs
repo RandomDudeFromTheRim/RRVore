@@ -36,7 +36,7 @@ namespace RRVore
 
             list.CheckboxLabeled("Prey can struggle free",
                 ref VoreSettings.Struggle,
-                "Melee DPS against how big the predator is, how each feels about weight, and how close the predator is to bursting.");
+                "Awake prey that can fight make progress based on their health, melee DPS, and how tightly they are held.");
 
             list.GapLine();
 
@@ -44,11 +44,12 @@ namespace RRVore
             VoreSettings.DigestEfficiency = list.Slider(VoreSettings.DigestEfficiency,
                 VoreSettings.MinEfficiency, VoreSettings.MaxEfficiency);
 
-            list.Label($"Share that lands at once: {VoreSettings.BolusFraction:0.00}");
+            list.Label($"Initial bolus: {VoreSettings.BolusFraction:P0} of prey mass", tooltip:
+                "Transferred at swallowing, up to the available room in the stomach. The rest transfers gradually.");
             VoreSettings.BolusFraction = list.Slider(VoreSettings.BolusFraction,
                 VoreSettings.MinBolus, VoreSettings.MaxBolus);
 
-            list.Label($"In-game hours per kilo digested: {VoreSettings.HoursPerKg:0.00}");
+            list.Label($"In-game hours per kilo transferred: {VoreSettings.HoursPerKg:0.00}");
             VoreSettings.HoursPerKg = list.Slider(VoreSettings.HoursPerKg,
                 VoreSettings.MinHours, 4f);
 

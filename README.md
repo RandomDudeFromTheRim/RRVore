@@ -14,14 +14,14 @@ it. This is the part RimRound actually wants, and nothing else.
 
 - **Swallow anyone helpless** — downed, asleep or a prisoner — from the right-click menu.
   A friendly pawn who likes being big may also do it on their own.
-- **Your stomach decides who is too much.** Swallowing somebody bigger than you can hold
-  bursts you, using the same limit the gorge constrictor uses. A weight-lover can take more;
-  ghouls and the void-touched can take anything.
+- **Your capacity decides who is too much.** The swallow check compares the potential weight
+  gain from the new prey and everyone already inside against RimRound's shared burst limit.
+  Ghouls and the void-touched are exempt.
 - **Fatal by default.** Prey are digested a bit at a time and eventually cease to exist, and
   what is left of them goes to the predator.
-- **Prey can fight their way out.** Their melee DPS against how big the predator is, how each
-  of them feels about weight, and how close the predator is to bursting. A weight-hater
-  fights like hell; a fanatic would rather not leave.
+- **Prey can fight their way out.** Awake prey who are on their feet build escape progress
+  based on their health and melee DPS. Relative size, weight opinions, and spare burst
+  capacity affect how much effort escape takes.
 - **The "Swallowed" tab** on a predator lists who is inside, how much of them is left, and
   lets you spit them back out.
 - **They stay people while they are inside.** Prey keep their faction, name and place in the
@@ -50,7 +50,7 @@ Options → Mod settings → **RimRound: Vore**.
 | Swallow downed enemies unprompted | on | Friendly pawns who like being big eat downed raiders on their own |
 | Prey can struggle free | on | Turn the escape attempts off for a purely one-way trip |
 | Share of a meal the predator keeps | 0.70 | The rest is lost as digestion |
-| Share that lands at once | 0.30 | The bolus; the remainder trickles in |
+| Initial bolus | 30% | Fraction of prey mass transferred at swallowing, up to available stomach room |
 | In-game hours per kilo | 0.15 | How fast the prey is transferred |
 
 A note on the last one: the stomach only holds so much, and only empties as fast as the

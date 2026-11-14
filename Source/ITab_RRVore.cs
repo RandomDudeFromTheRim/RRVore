@@ -12,6 +12,9 @@ namespace RRVore
     /// </summary>
     internal class ITab_RRVore : ITab
     {
+        const float PreyRowHeight = 54f;
+        Vector2 scrollPosition;
+
         public ITab_RRVore()
         {
             labelKey = "RR_VoreTab";
@@ -32,34 +35,29 @@ namespace RRVore
         protected override void FillTab()
         {
             Rect rect = new Rect(0f, 0f, size.x, size.y).ContractedBy(10f);
-            var list = new Listing_Standard();
-            list.Begin(rect);
-
             Hediff_RRVoreHold hold = Hold;
             if (hold == null || hold.Count == 0)
-            {
-                list.Label("Nothing inside.");
-                list.End();
                 return;
-            }
 
-            list.Label($"Carrying {hold.Count}, {hold.RemainingKg:0} kg left to digest");
-            list.Label($"Room for about {RimRound.Utilities.BurstPoint.KilosRemaining(SelPawn):0} kg more before {SelPawn.LabelShort} bursts");
-            list.GapLine();
-
-            foreach (VorePrey v in hold.prey.ToList())
+            Widgets.Label(new Rect(rect.x, rect.y, rect.width, 26f),
+                $"Carrying {hold.Count} ({hold.RemainingKg:0.0} kg left)");
+            var viewport = new Rect(rect.x, rect.y + 30f, rect.width, rect.height - 30f);
+            var entries = hold.prey.Where(v => v?.pawn != null).ToList();
+            float contentHeight = entries.Count * PreyRowHeight;
+            float contentWidth = viewport.width - (contentHeight > viewport.height ? 16f : 0f);
+            Widgets.BeginScrollView(viewport, ref scrollPosition, new Rect(0f, 0f, contentWidth, contentHeight));
+            for (int i = 0; i < entries.Count; i++)
             {
-                if (v?.pawn == null)
-                    continue;
-
-                Pawn p = v.pawn;
-                list.Label($"{p.LabelShort} - {v.remainingKg:0} of {v.massKg:0} kg left");
-                if (list.ButtonText($"Spit out {p.LabelShort}"))
+                VorePrey v = entries[i];
+                float y = i * PreyRowHeight;
+                float labelWidth = contentWidth - 96f;
+                Widgets.Label(new Rect(0f, y, labelWidth, 24f), v.pawn.LabelShortCap.ToString().Truncate(labelWidth));
+                Widgets.Label(new Rect(0f, y + 24f, labelWidth, 22f),
+                    $"{v.DigestionProgress:P0} digested ({v.remainingKg:0.0} kg left)");
+                if (Widgets.ButtonText(new Rect(labelWidth + 8f, y + 5f, 88f, 34f), "Spit out"))
                     hold.SpitOut(v);
-                list.Gap(6f);
             }
-
-            list.End();
+            Widgets.EndScrollView();
         }
     }
 }

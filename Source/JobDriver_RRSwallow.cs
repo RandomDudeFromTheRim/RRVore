@@ -27,8 +27,8 @@ namespace RRVore
             swallow.defaultDuration = SwallowTicks;
             swallow.defaultCompleteMode = ToilCompleteMode.Delay;
             swallow.handlingFacing = true;
-            swallow.AddFinishAction(() => Hediff_RRVoreHold.Swallow(pawn, Target));
             yield return swallow;
+            yield return Toils_General.Do(() => Hediff_RRVoreHold.Swallow(pawn, Target));
         }
     }
 }
