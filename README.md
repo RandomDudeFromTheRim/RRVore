@@ -53,8 +53,10 @@ Options → Mod settings → **RimRound: Vore**.
 | Initial bolus | 30% | Fraction of prey mass transferred at swallowing, up to available stomach room |
 | In-game hours per kilo | 0.15 | How fast the prey is transferred |
 
-A note on the last one: the stomach only holds so much, and only empties as fast as the
-predator digests. Once it is full, the pace is set by their digestion, not by this number.
+Larger meals transfer faster and aim for a higher stomach fullness. At extreme prey-to-predator
+mass ratios, the target can reach 150% of the hard limit with RimRound bursting enabled. RimRound
+then handles strain and rupture. With bursting disabled, the target is capped at the hard limit.
+The swallow menu warns about rupture risk, and opportunistic hunting skips meals with that warning.
 
 ## Compatibility
 

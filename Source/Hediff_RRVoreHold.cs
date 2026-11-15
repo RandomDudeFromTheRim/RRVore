@@ -62,8 +62,8 @@ namespace RRVore
 
         const int CheckInterval = 250;
         const int StruggleInterval = 2500;
-        /// <summary>How full the stomach is kept between mouthfuls, as a share of the soft limit.</summary>
-        const float StomachTargetFraction = 0.8f;
+        const float MaximumStomachOverfill = 1.5f;
+        const float MaximumTransferMultiplier = 8f;
         /// <summary>Damage per kilo transferred, spread over the prey's body.</summary>
         const float DamagePerKilo = 0.6f;
         const float StruggleWorkBase = 30f;
@@ -189,6 +189,28 @@ namespace RRVore
             return reason == null;
         }
 
+        static float MealPressure(Pawn predator, float preyKg) =>
+            Mathf.InverseLerp(0.5f, 2.5f, preyKg / Mathf.Max(1f, MassOf(predator)));
+
+        static float StomachTarget(Pawn predator, RimRound.Comps.FullnessAndDietStats_ThingComp stomach, float preyKg)
+        {
+            float ceiling = GlobalSettings.burstingEnabled && !BurstPoint.CannotBurst(predator)
+                ? stomach.HardLimit * MaximumStomachOverfill
+                : stomach.HardLimit;
+            return Mathf.Lerp(Mathf.Min(stomach.SoftLimit, ceiling), ceiling, MealPressure(predator, preyKg));
+        }
+
+        public static bool RisksStomachRupture(Pawn predator, Pawn target)
+        {
+            if (VoreSettings.DigestEfficiency <= 0f
+                || !(predator.TryGetComp<RimRound.Comps.FullnessAndDietStats_ThingComp>() is RimRound.Comps.FullnessAndDietStats_ThingComp stomach))
+                return false;
+
+            float load = MassOf(target) + (Of(predator)?.RemainingKg ?? 0f);
+            return StomachTarget(predator, stomach, load) > stomach.HardLimit
+                && stomach.CurrentFullness + load * VoreSettings.DigestEfficiency > stomach.HardLimit;
+        }
+
         /// <summary>Swallow a pawn whole, and start feeding them into the stomach.</summary>
         public static void Swallow(Pawn pred, Pawn target)
         {
@@ -256,7 +278,8 @@ namespace RRVore
         {
             float hoursPerKg = Mathf.Clamp(VoreSettings.HoursPerKg, VoreSettings.MinHours, VoreSettings.MaxHours);
             float kgPerTick = 1f / (hoursPerKg * 2500f);
-            float allowance = kgPerTick * ticks;
+            float pressure = MealPressure(pawn, RemainingKg);
+            float allowance = kgPerTick * ticks * Mathf.Lerp(2f, MaximumTransferMultiplier, pressure);
 
             for (int i = prey.Count - 1; i >= 0; i--)
             {
@@ -274,7 +297,7 @@ namespace RRVore
                 }
 
                 v.ticksInside += ticks;
-                TransferToStomach(v, allowance);
+                allowance -= TransferToStomach(v, allowance);
 
                 if (v.remainingKg <= 0f)
                     Consume(i);
@@ -288,22 +311,22 @@ namespace RRVore
         /// Move up to <paramref name="maxKg"/> of this prey into the predator's stomach, as
         /// much as fits below the target fullness, and apply the corresponding effects to the prey.
         /// </summary>
-        void TransferToStomach(VorePrey v, float maxKg)
+        float TransferToStomach(VorePrey v, float maxKg)
         {
             var fnd = pawn.TryGetComp<RimRound.Comps.FullnessAndDietStats_ThingComp>();
             if (fnd == null)
-                return;
+                return 0f;
 
             float moved = Mathf.Min(v.remainingKg, maxKg);
             float efficiency = Mathf.Clamp01(VoreSettings.DigestEfficiency);
             if (efficiency > 0f)
             {
-                float target = Mathf.Min(fnd.SoftLimit * StomachTargetFraction, fnd.HardLimit);
+                float target = StomachTarget(pawn, fnd, RemainingKg);
                 float room = Mathf.Max(0f, target - fnd.CurrentFullness);
                 moved = Mathf.Min(moved, room / efficiency);
             }
             if (moved <= 0f)
-                return;
+                return 0f;
 
             // Use RimRound's current mixture just as the feeding tube does.
             float litres = moved * efficiency;
@@ -316,6 +339,7 @@ namespace RRVore
                     -HediffUtility.KilosToSeverityWithoutBaseWeight(moved), false, false);
 
             Burn(v.pawn, moved * DamagePerKilo);
+            return moved;
         }
 
         /// <summary>Stomach acid doing its work on the way through.</summary>

@@ -70,7 +70,7 @@ namespace RRVore
                     continue;
                 if (p.Position.DistanceTo(pred.Position) > Radius)
                     continue;
-                if (Hediff_RRVoreHold.Refusal(pred, p) != null)
+                if (Hediff_RRVoreHold.Refusal(pred, p) != null || Hediff_RRVoreHold.RisksStomachRupture(pred, p))
                     continue;
                 return p;
             }

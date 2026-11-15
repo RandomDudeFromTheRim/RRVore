@@ -29,6 +29,9 @@ namespace RRVore
             if (!predator.CanReserveAndReach(clickedPawn, PathEndMode.Touch, Danger.Deadly))
                 return new FloatMenuOption(label + ": " + "NoPath".Translate().CapitalizeFirst(), null);
 
+            if (Hediff_RRVoreHold.RisksStomachRupture(predator, clickedPawn))
+                label += " (risks stomach rupture)";
+
             return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(label, delegate
             {
                 Job job = JobMaker.MakeJob(VoreDefOf.SwallowTarget, clickedPawn);

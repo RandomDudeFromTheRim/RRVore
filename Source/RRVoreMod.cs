@@ -45,11 +45,11 @@ namespace RRVore
                 VoreSettings.MinEfficiency, VoreSettings.MaxEfficiency);
 
             list.Label($"Initial bolus: {VoreSettings.BolusFraction:P0} of prey mass", tooltip:
-                "Transferred at swallowing, up to the available room in the stomach. The rest transfers gradually.");
+                "Transferred at swallowing, up to the meal's fullness target. Oversized meals can push past the hard limit.");
             VoreSettings.BolusFraction = list.Slider(VoreSettings.BolusFraction,
                 VoreSettings.MinBolus, VoreSettings.MaxBolus);
 
-            list.Label($"In-game hours per kilo transferred: {VoreSettings.HoursPerKg:0.00}");
+            list.Label($"Base hours per kilo transferred: {VoreSettings.HoursPerKg:0.00}");
             VoreSettings.HoursPerKg = list.Slider(VoreSettings.HoursPerKg,
                 VoreSettings.MinHours, 4f);
 
@@ -57,7 +57,7 @@ namespace RRVore
 
             list.Label("Swallowed prey become stomach content, and RimRound's own digestion turns that into weight - " +
                        "a bolus when they go down, then a steady trickle.");
-            list.Label("A full stomach only empties as fast as the predator digests, which is what sets the real pace.");
+            list.Label("Bigger meals transfer faster and aim for higher fullness. If RimRound bursting is enabled, an oversized meal can strain or rupture the stomach.");
 
             list.End();
         }
