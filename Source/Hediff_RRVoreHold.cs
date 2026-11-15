@@ -21,6 +21,12 @@ namespace RRVore
         public int ticksInside;
         /// <summary>How far this prey has fought their way out. See RequiredStruggleWork.</summary>
         public float struggleWork;
+        /// <summary>
+        /// Stomach content this prey put into the predator and that has not digested yet.
+        /// Needed so letting them go can take it back out - without it, swallowing and
+        /// immediately spitting someone out is free weight for the predator.
+        /// </summary>
+        public float deliveredLitres;
         public float DigestionProgress => massKg > 0f ? Mathf.Clamp01(1f - remainingKg / massKg) : 0f;
 
         public void ExposeData()
@@ -30,6 +36,7 @@ namespace RRVore
             Scribe_Values.Look(ref remainingKg, "remainingKg", 0f);
             Scribe_Values.Look(ref ticksInside, "ticksInside", 0);
             Scribe_Values.Look(ref struggleWork, "struggleWork", 0f);
+            Scribe_Values.Look(ref deliveredLitres, "deliveredLitres", 0f);
         }
     }
 
@@ -301,6 +308,7 @@ namespace RRVore
             // Use RimRound's current mixture just as the feeding tube does.
             float litres = moved * efficiency;
             fnd.CurrentFullness += litres;
+            v.deliveredLitres += litres;
             v.remainingKg = Mathf.Max(0f, v.remainingKg - moved);
 
             if (v.pawn.WeightHediff() != null)
@@ -363,7 +371,11 @@ namespace RRVore
             for (int i = prey.Count - 1; i >= 0; i--)
             {
                 VorePrey v = prey[i];
-                if (v?.pawn == null || v.pawn.Dead || v.pawn.Downed || !v.pawn.Awake())
+                // Downed prey are the normal case - Refusal() only lets you swallow someone who
+                // is downed, asleep or a prisoner - so gating on Downed here meant the escape
+                // mechanic could never fire for the prey this mod actually takes. Unconscious
+                // prey still can't struggle; hurt prey struggle worse via SummaryHealthPercent.
+                if (v?.pawn == null || v.pawn.Dead || !v.pawn.Awake())
                     continue;
 
                 float required = RequiredStruggleWork(v);
@@ -500,6 +512,12 @@ namespace RRVore
                 prey.Insert(index, v);
                 return;
             }
+
+            // What they already put in the stomach comes back out with them. Weight that has
+            // already been digested stays where it is; this is only the undigested part.
+            var fnd = pawn.TryGetComp<RimRound.Comps.FullnessAndDietStats_ThingComp>();
+            if (fnd != null && v.deliveredLitres > 0f)
+                fnd.CurrentFullness = Mathf.Max(0f, fnd.CurrentFullness - Mathf.Min(fnd.CurrentFullness, v.deliveredLitres));
 
             RestoreAfterRelease(victim, struggled);
         }
